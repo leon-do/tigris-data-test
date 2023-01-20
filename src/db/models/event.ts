@@ -5,6 +5,9 @@ export class Event {
   @PrimaryKey(TigrisDataTypes.STRING, { order: 1 })
   user: string;
 
+  @Field(TigrisDataTypes.INT64)
+  chainId: number;
+
   @Field(TigrisDataTypes.STRING)
   contractAddress: string;
 
