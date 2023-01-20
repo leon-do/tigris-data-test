@@ -17,3 +17,7 @@ TIGRIS_DB_BRANCH=main
 check dashboard
 
 ![](https://user-images.githubusercontent.com/19412160/213665230-0ee139b2-cfc8-48e0-82ad-db6d1fe90aa0.png)
+
+## Run example queries
+
+`npm run dev`

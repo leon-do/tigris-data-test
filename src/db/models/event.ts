@@ -3,6 +3,9 @@ import { Field, PrimaryKey, TigrisCollection, TigrisDataTypes } from "@tigrisdat
 @TigrisCollection("event")
 export class Event {
   @PrimaryKey(TigrisDataTypes.STRING, { order: 1 })
+  webhookUrl: string; 
+
+  @Field(TigrisDataTypes.STRING)
   user: string;
 
   @Field(TigrisDataTypes.INT64)

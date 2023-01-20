@@ -1,5 +1,5 @@
 import { User } from "../db/models/user";
-import { Collection, DB, SearchQuery } from "@tigrisdata/core";
+import { Collection, DB } from "@tigrisdata/core";
 
 export class UsersRepository {
   private readonly users: Collection<User>;
@@ -9,75 +9,48 @@ export class UsersRepository {
   }
 
   // Create a user record
-  public create = async (user: User) => {
-    const createdUser = await this.users.insertOne(user);
-    console.log(createdUser);
+  public create = async (user: User): Promise<boolean> => {
+    try {
+      await this.users.insertOne(user);
+    } catch (error) {
+      return false;
+    }
   };
 
   // Read a user by ID
-  public findOne = async (id: string) => {
+  public findOne = async (_id: string): Promise<User> => {
     const user = await this.users.findOne({
-      filter: { userId: BigInt(id) },
+      filter: { id: _id },
     });
-
-    if (user !== undefined) {
-      console.log(user);
-    } else {
-      console.log("No user found matching userId: " + id);
-    }
+    return user;
   };
 
   // Update a user record
-  public update = async (id: string, user: User) => {
-    await this.users.updateOne({
-      filter: { userId: BigInt(id) },
-      fields: {
-        name: user.name,
-        balance: user.balance,
-      },
-    });
-  };
-
-  // Delete a user record
-  public delete = async (id: string) => {
-    await this.users.deleteOne({
-      filter: { userId: BigInt(id) },
-    });
-  };
-
-  // Read all users from the collection
-  public findAll = async () => {
-    const usersCursor = this.users.findMany();
+  public update = async (_id: string, _user: User): Promise<boolean> => {
     try {
-      for await (const user of usersCursor) {
-        console.log(
-          `UserId: ${user.userId}, Name: ${user.name}, Balance: ${user.balance}`
-        );
-      }
-    } catch (e) {
-      console.error(e);
+      await this.users.updateOne({
+        filter: {
+          id: _id,
+        },
+        fields: {
+          credits: _user.credits,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
     }
   };
 
-  // Search user records by name
-  public search = async (name: string) => {
-    const query: SearchQuery<User> = {
-      q: name,
-      searchFields: ["name"],
-    };
-    const results = this.users.search(query);
+  // Delete a user record
+  public delete = async (_id: string): Promise<boolean> => {
     try {
-      for await (const res of results) {
-        console.log(`Search results found: ${res.meta.found}`);
-        for (let hit of res.hits) {
-          const user = hit.document;
-          console.log(
-            `UserId: ${user.userId}, Name: ${user.name}, Balance: ${user.balance}`
-          );
-        }
-      }
-    } catch (e) {
-      console.error(e);
+      await this.users.deleteOne({
+        filter: { id: _id },
+      });
+    } catch {
+      return false;
     }
   };
 }
